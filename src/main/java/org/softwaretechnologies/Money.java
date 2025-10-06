@@ -2,6 +2,7 @@ package org.softwaretechnologies;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Objects;
 import java.util.Random;
 
 import static java.lang.Integer.MAX_VALUE;
@@ -26,9 +27,14 @@ public class Money {
      */
     @Override
     public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Money money = (Money) o;
+        if(!type.equals(money.type)) return false;
 
+        BigDecimal thisRounded = amount.setScale(4, RoundingMode.HALF_UP);
+        BigDecimal thatRounded = money.amount.setScale(4, RoundingMode.HALF_UP);
 
-        return false;
+        return thisRounded.equals(thatRounded);
     }
 
     /**
