@@ -54,11 +54,40 @@ public class Money {
      */
     @Override
     public int hashCode() {
-        // TODO: реализуйте вышеуказанную функцию
+        // Округляем amount до 4 знаков
+        BigDecimal roundedAmount = amount != null ?
+                amount.setScale(4, RoundingMode.HALF_UP) : null;
 
+        // Вычисляем первую часть хеша: округленное количество * 10000
+        long amountHash = 0;
+        if (roundedAmount != null) {
+            // Умножаем на 10000 и конвертируем в long
+            amountHash = roundedAmount.multiply(BigDecimal.valueOf(10000)).longValue();
+        } else {
+            amountHash = 10000; // если amount null
+        }
 
-        Random random = new Random();
-        return random.nextInt();
+        // Определяем код валюты
+        int currencyCode = 5; // по умолчанию для null типа
+        if (type != null) {
+            switch (type) {
+                case USD: currencyCode = 1; break;
+                case EURO: currencyCode = 2; break;
+                case RUB: currencyCode = 3; break;
+                case KRONA: currencyCode = 4; break;
+            }
+        }
+
+        // Вычисляем итоговый хеш
+        long totalHash = amountHash + currencyCode;
+
+        // Проверяем на переполнение
+        if (totalHash >= (long) MAX_VALUE - 5) {
+            return MAX_VALUE;
+        }
+
+        return (int) totalHash;
+
     }
 
     /**
@@ -80,9 +109,11 @@ public class Money {
      */
     @Override
     public String toString() {
-        // TODO: реализуйте вышеуказанную функцию
-        String str = type.toString()+": "+amount.setScale(4, RoundingMode.HALF_UP).toString();
-        return str;
+        String typeStr = (type == null) ? "null" : type.toString();
+        String amountStr = (amount == null) ? "null" : amount.setScale(4, RoundingMode.HALF_UP).toString();
+
+        return typeStr + ": " + amountStr;
+
     }
 
     public BigDecimal getAmount() {
