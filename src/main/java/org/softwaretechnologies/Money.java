@@ -54,7 +54,6 @@ public class Money {
      */
     @Override
     public int hashCode() {
-        // Округляем amount до 4 знаков
         BigDecimal roundedAmount = amount != null ?
                 amount.setScale(4, RoundingMode.HALF_UP) : null;
 
