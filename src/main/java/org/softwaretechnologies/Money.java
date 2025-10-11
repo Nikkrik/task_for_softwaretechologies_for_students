@@ -27,14 +27,26 @@ public class Money {
      */
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Money money = (Money) o;
-        if(!type.equals(money.type)) return false;
+        if(this == o)
+            return true;
+        if(!(o instanceof Money))
+            return false;
 
-        BigDecimal thisRounded = amount.setScale(4, RoundingMode.HALF_UP);
-        BigDecimal thatRounded = money.amount.setScale(4, RoundingMode.HALF_UP);
+        Money other = (Money) o;
 
-        return thisRounded.equals(thatRounded);
+        boolean boolType = (type == null && other.type == null);
+
+        if(!boolType){
+            if(type == null || other.type == null) return false;
+            boolType = (type.equals(other.type));
+        }
+        if(amount == null && other.amount == null) return true;
+        if(amount == null || other.amount == null) return false;
+
+        BigDecimal scaleThis = amount.setScale(4,RoundingMode.HALF_UP);
+        BigDecimal scaleOther = other.amount.setScale(4, RoundingMode.HALF_UP);
+
+        return scaleThis.equals(scaleOther)&&boolType;
     }
 
     /**
@@ -54,38 +66,22 @@ public class Money {
      */
     @Override
     public int hashCode() {
-        BigDecimal roundedAmount = amount != null ?
-                amount.setScale(4, RoundingMode.HALF_UP) : null;
+        BigDecimal base = (amount == null)?new BigDecimal(10000):amount.setScale(4,RoundingMode.HALF_UP).multiply(new BigDecimal(10000));
 
-        // Вычисляем первую часть хеша: округленное количество * 10000
-        long amountHash = 0;
-        if (roundedAmount != null) {
-            // Умножаем на 10000 и конвертируем в long
-            amountHash = roundedAmount.multiply(BigDecimal.valueOf(10000)).longValue();
-        } else {
-            amountHash = 10000; // если amount null
-        }
-
-        // Определяем код валюты
-        int currencyCode = 5; // по умолчанию для null типа
-        if (type != null) {
-            switch (type) {
-                case USD: currencyCode = 1; break;
-                case EURO: currencyCode = 2; break;
-                case RUB: currencyCode = 3; break;
-                case KRONA: currencyCode = 4; break;
+        int typeValue = 5;
+        if(type != null) {
+            switch (type){
+                case USD: typeValue = 1; break;
+                case EURO: typeValue = 2; break;
+                case RUB: typeValue = 3; break;
+                case KRONA: typeValue = 4; break;
             }
         }
 
-        // Вычисляем итоговый хеш
-        long totalHash = amountHash + currencyCode;
+        BigDecimal result = base.add(new BigDecimal(typeValue));
 
-        // Проверяем на переполнение
-        if (totalHash >= (long) MAX_VALUE - 5) {
-            return MAX_VALUE;
-        }
-
-        return (int) totalHash;
+        return result.compareTo(BigDecimal.valueOf(MAX_VALUE - 5)) >= 0?
+                MAX_VALUE:result.intValue();
 
     }
 
