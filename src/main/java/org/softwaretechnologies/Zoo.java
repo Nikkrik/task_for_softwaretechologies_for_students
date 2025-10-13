@@ -34,7 +34,16 @@ public class Zoo {
      */
     public List<String> soundAllAnimalsSortByName() {
         List<String> sounds = new ArrayList<>();
-        // TODO заполните корректно список звуков
+        List<Animal> alphabetAnimal = animalList;
+        alphabetAnimal.sort(new Comparator<Animal>() {
+            @Override
+            public int compare(Animal o1, Animal o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+
+        for(Animal animal : alphabetAnimal)
+            sounds.add(animal.sound());
 
         return sounds;
     }
