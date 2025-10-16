@@ -34,13 +34,8 @@ public class Zoo {
      */
     public List<String> soundAllAnimalsSortByName() {
         List<String> sounds = new ArrayList<>();
-        List<Animal> alphabetAnimal = animalList;
-        alphabetAnimal.sort(new Comparator<Animal>() {
-            @Override
-            public int compare(Animal o1, Animal o2) {
-                return o1.getName().compareTo(o2.getName());
-            }
-        });
+        List<Animal> alphabetAnimal = new ArrayList<>(animalList); // Создаем копию
+        alphabetAnimal.sort(Comparator.comparing(Animal::getName));
 
         for(Animal animal : alphabetAnimal)
             sounds.add(animal.sound());
